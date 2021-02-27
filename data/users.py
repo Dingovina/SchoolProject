@@ -4,7 +4,7 @@ from .db_session import SqlAlchemyBase
 class User(SqlAlchemyBase):
     __tablename__ = 'users'
 
-    username = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    username = sqlalchemy.Column(sqlalchemy.String, primary_key=True)
     email = sqlalchemy.Column(sqlalchemy.String, unique=True, nullable=True)
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=True)
 
