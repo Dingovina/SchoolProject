@@ -92,16 +92,5 @@ def logout():
 
 
 if __name__ == '__main__':
-
-    db_session.global_init("db/blogs.db")
-    db_sess = db_session.create_session()
-
-    user = db_sess.query(User).filter(User.id == 1).first()
-    user1 = user
-    user1.role = "Admin"
-    db_sess.delete(user)
-    db_sess.add(user1)
-    db_sess.commit()
-
     app.run(port=8080, host='127.0.0.1')
 
