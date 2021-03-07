@@ -33,7 +33,9 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 
 
-@app.route('/')
+
+@login_required
+@app.route('/index')
 def index():
     return render_template('index.html')
 
@@ -66,6 +68,7 @@ def reg():
 
 
 @app.route('/login', methods=['GET', 'POST'])
+@app.route('/', methds=['GET', 'POST'])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
@@ -89,4 +92,16 @@ def logout():
 
 
 if __name__ == '__main__':
+
+    db_session.global_init("db/blogs.db")
+    db_sess = db_session.create_session()
+
+    user = db_sess.query(User).filter(User.id == 1).first()
+    user1 = user
+    user1.role = "Admin"
+    db_sess.delete(user)
+    db_sess.add(user1)
+    db_sess.commit()
+
     app.run(port=8080, host='127.0.0.1')
+

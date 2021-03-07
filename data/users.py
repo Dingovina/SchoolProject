@@ -11,6 +11,7 @@ class User(SqlAlchemyBase, UserMixin):
     username = sqlalchemy.Column(sqlalchemy.String)
     email = sqlalchemy.Column(sqlalchemy.String, unique=True, nullable=True)
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    role = sqlalchemy.Column(sqlalchemy.String, default='Operator')
 
     def __repr__(self):
         return ' '.join(
