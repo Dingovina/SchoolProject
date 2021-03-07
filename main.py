@@ -40,8 +40,6 @@ def index():
 
 @login_manager.user_loader
 def load_user(user_id):
-    for i in range(10):
-        print(user_id)
     db_session.global_init("db/blogs.db")
     db_sess = db_session.create_session()
     return db_sess.query(User).get(user_id)
