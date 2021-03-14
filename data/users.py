@@ -18,7 +18,7 @@ class User(SqlAlchemyBase, UserMixin):
 
     def __repr__(self):
         return ' '.join(
-            [self.username, self.email, self.hashed_password])
+            [self.username, self.email, self.hashed_password, self.role])
 
     def check_password(self, trying_pass):
         if trying_pass == self.hashed_password:

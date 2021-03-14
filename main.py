@@ -45,8 +45,9 @@ login_manager.init_app(app)
 def index():
     db_session.global_init("db/blogs.db")
     db_sess = db_session.create_session()
+    all_users = db_sess.query(User).all()
     all_quests = db_sess.query(Question).all()
-    return render_template('index.html', quests=all_quests)
+    return render_template('index.html', quests=all_quests, all_users=all_users)
 
 
 @login_manager.user_loader
@@ -122,6 +123,34 @@ def new_question():
         db_sess.commit()
         return redirect("/index")
     return render_template('new_question.html', title='Задать вопрос', form=form)
+
+
+@login_required
+@app.route('/specialist/<id>')
+def make_spec(id):
+    if current_user.role == 'Admin':
+        db_session.global_init("db/blogs.db")
+        db_sess = db_session.create_session()
+        user = db_sess.query(User).filter(User.id == id).first()
+        user.role = 'Specialist'
+        db_sess.commit()
+        return redirect('/index')
+    else:
+        return "Недостаточно прав."
+
+
+@login_required
+@app.route('/operator/<id>')
+def make_oper(id):
+    if current_user.role == 'Admin':
+        db_session.global_init("db/blogs.db")
+        db_sess = db_session.create_session()
+        user = db_sess.query(User).filter(User.id == id).first()
+        user.role = 'Operator'
+        db_sess.commit()
+        return redirect('/index')
+    else:
+        return "Недостаточно прав."
 
 
 if __name__ == '__main__':

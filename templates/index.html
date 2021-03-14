@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Вопросы</h1>
     {% if current_user.is_authenticated %}
         {% if current_user.role == "Operator" %}
+            <h1>Вопросы</h1>
                 <a class="btn btn-success" href="/question">Задать вопрос</a>
                 {% for question in quests %}
                     {% if question.personal %}
@@ -21,7 +21,17 @@
                     {% endif %}
                 {% endfor %}
             {% elif current_user.role == "Admin" %}
-                <h3>Вы вошли как Администратор</h3>
+                <h1>Все пользователи</h1>
+                {% for user in all_users %}
+                    <p>
+                        {{ user.id }} {{ user.username }} - {{ user.role }}
+                        {% if user.role == "Operator" %}
+                            <a class="btn btn-success" href="/specialist/{{ user.id }}">Назначить Специалистом</a>
+                            {% elif user.role == "Specialist" %}
+                            <a class="btn btn-success" href="/operator/{{ user.id }}">Назначить Оператором</a>
+                        {% endif %}
+                    </p>
+                {% endfor %}
             {% elif current_user.role == "Specialist" %}
                 <h3>Вы вошли как Специалист</h3>
         {% endif %}

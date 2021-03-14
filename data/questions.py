@@ -17,7 +17,6 @@ class Question(SqlAlchemyBase):
 
     user = orm.relation('User')
 
-
     def __repr__(self):
         return ' '.join(
             [str(self.user_id), self.text])
