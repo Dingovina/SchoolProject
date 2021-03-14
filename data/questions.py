@@ -11,6 +11,7 @@ class Question(SqlAlchemyBase):
     user_id = sqlalchemy.Column(sqlalchemy.Integer,
                                 sqlalchemy.ForeignKey("users.id"))
     author_username = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    shorted_text = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     text = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     personal = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
     answered = sqlalchemy.Column(sqlalchemy.Boolean, default=False)

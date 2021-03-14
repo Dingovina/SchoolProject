@@ -115,6 +115,7 @@ def new_question():
         db_sess = db_session.create_session()
         question = Question()
         question.text = form.text.data
+        question.shorted_text = form.text.data[:20] + '...' if len(form.text.data) > 20 else form.text.data
         question.user_id = current_user.id
         question.author_username = current_user.username
         question.personal = form.personal.data
@@ -151,6 +152,27 @@ def make_oper(id):
         return redirect('/index')
     else:
         return "Недостаточно прав."
+
+
+
+@login_required
+@app.route('/open/<id>')
+def open_quest(id):
+    db_session.global_init("db/blogs.db")
+    db_sess = db_session.create_session()
+    question = db_sess.query(Question).filter(Question.id == id).first()
+    return render_template('question.html', quest=question)
+
+
+@login_required
+@app.route('/delete/<id>')
+def delete_quest(id):
+    db_session.global_init("db/blogs.db")
+    db_sess = db_session.create_session()
+    question = db_sess.query(Question).filter(Question.id == id).first()
+    db_sess.delete(question)
+    db_sess.commit()
+    return redirect('/index')
 
 
 if __name__ == '__main__':

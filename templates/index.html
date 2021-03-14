@@ -10,13 +10,17 @@
                         {% if question.user_id == current_user.id %}
                         <p>
                             {{ question.author_username }}<br>
-                            {{ question.text }}
+                            {{ question.shorted_text }}
                         </p>
                         {% endif %}
                         {% else %}
                         <p>
                             {{ question.author_username }}<br>
-                            {{ question.text }}
+                            {{ question.shorted_text }}
+                            <a class="btn btn-success" href="/open/{{ question.id }}">Открыть вопрос</a>
+                            {% if question.user_id == current_user.id %}
+                                <a class="btn btn-success" href="/delete/{{ question.id }}">Удалить вопрос</a>
+                            {% endif %}
                         </p>
                     {% endif %}
                 {% endfor %}
