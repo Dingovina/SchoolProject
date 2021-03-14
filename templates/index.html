@@ -11,6 +11,10 @@
                         <p>
                             {{ question.author_username }}<br>
                             <textarea rows="2" cols="50" disabled>{{question.text}}</textarea>
+                            <a class="btn btn-success" href="/open/{{ question.id }}">Открыть вопрос</a>
+                            {% if question.user_id == current_user.id %}
+                                <a class="btn btn-success" href="/delete/{{ question.id }}">Удалить вопрос</a>
+                            {% endif %}
                         </p>
                         {% endif %}
                         {% else %}
@@ -37,7 +41,25 @@
                     </p>
                 {% endfor %}
             {% elif current_user.role == "Specialist" %}
-                <h3>Вы вошли как Специалист</h3>
+                <h3>Активные вопросы</h3>
+                {% for question in quests %}
+                        {% if question.answered == False %}
+                            <p>
+                                {{ question.author_username }}<br>
+                                {{ question.shorted_text }}<br>
+                                <a class="btn btn-success" href="/add_answer/{{ question.id }}">Добавить ответ</a>
+                            </p>
+                        {% endif %}
+                {% endfor %}
+                <h3>Решённые вопросы</h3>
+                {% for question in quests %}
+                        {% if question.answered == True %}
+                            <p>
+                                {{ question.author_username }}<br>
+                                {{ question.shorted_text }}
+                            </p>
+                        {% endif %}
+                {% endfor %}
         {% endif %}
     {% else %}
         <h3>Вы не авторизованы</h3>

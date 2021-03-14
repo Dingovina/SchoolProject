@@ -5,7 +5,7 @@ from data.questions import Question
 import datetime
 from flask import Flask, redirect, render_template
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField
 from wtforms.validators import DataRequired
 
 
@@ -28,6 +28,11 @@ class QuestionForm(FlaskForm):
     text = StringField('Вопрос', validators=[DataRequired()])
     personal = BooleanField('Личное')
     submit = SubmitField('Задать вопрос')
+
+
+class AnswerForm(FlaskForm):
+    answer = TextAreaField('Ваш ответ')
+    submit = SubmitField('Отправить ответ')
 
 
 app = Flask(__name__)
@@ -154,7 +159,6 @@ def make_oper(id):
         return "Недостаточно прав."
 
 
-
 @login_required
 @app.route('/open/<id>')
 def open_quest(id):
@@ -174,6 +178,27 @@ def delete_quest(id):
     db_sess.commit()
     return redirect('/index')
 
+
+@login_required
+@app.route('/add_answer/<id>', methods=["GET", "POST"])
+def add_answer(id):
+    if current_user.role == 'Specialist':
+        form = AnswerForm()
+        if form.validate_on_submit():
+            db_session.global_init("db/blogs.db")
+            db_sess = db_session.create_session()
+            question = db_sess.query(Question).filter(Question.id == id).first()
+            question.answer_author = current_user.username
+            question.answer = form.answer.data
+            question.answered = True
+            db_sess.commit()
+            return redirect('/index')
+        db_session.global_init("db/blogs.db")
+        db_sess = db_session.create_session()
+        question = db_sess.query(Question).filter(Question.id == id).first()
+        return render_template('add_answer.html', quest=question, form=form)
+    else:
+        return redirect('/index')
 
 if __name__ == '__main__':
     app.run(port=8080, host='127.0.0.1')

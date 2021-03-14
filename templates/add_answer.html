@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <a id="quest">
+        <h3>Вопрос пользователя</h3>
+        <p>
+            <textarea class="form-control" id="question" rows="3" name="question" readonly>{{quest.text}}</textarea>
+        </p>
+    </a>
+    <br>
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <p>
+            <h3>{{ form.answer.label }}</h3>
+            {{ form.answer(class="form-control", type="text") }}<br>
+            {% for error in form.answer.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        </p>
+        <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+    </form>
+{% endblock %}
