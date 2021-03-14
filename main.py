@@ -1,6 +1,7 @@
-from flask_login import LoginManager, login_user, login_required, logout_user
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from data import db_session
 from data.users import User
+from data.questions import Question
 import datetime
 from flask import Flask, redirect, render_template
 from flask_wtf import FlaskForm
@@ -23,6 +24,12 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Войти')
 
 
+class QuestionForm(FlaskForm):
+    text = StringField('Вопрос', validators=[DataRequired()])
+    personal = BooleanField('Личное')
+    submit = SubmitField('Задать вопрос')
+
+
 app = Flask(__name__)
 app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(
     days=365
@@ -33,11 +40,13 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 
 
-
 @login_required
 @app.route('/index')
 def index():
-    return render_template('index.html')
+    db_session.global_init("db/blogs.db")
+    db_sess = db_session.create_session()
+    all_quests = db_sess.query(Question).all()
+    return render_template('index.html', quests=all_quests)
 
 
 @login_manager.user_loader
@@ -55,12 +64,17 @@ def reg():
         db_sess = db_session.create_session()
         user = User()
         if form.password.data == form.repeat_password.data:
-            user.email = form.email.data
-            user.hashed_password = form.password.data
-            user.username = form.username.data
-            db_sess.add(user)
-            db_sess.commit()
-            return redirect('/login')
+            try:
+                user.email = form.email.data
+                user.hashed_password = form.password.data
+                user.username = form.username.data
+                db_sess.add(user)
+                db_sess.commit()
+                return redirect('/login')
+            except:
+                return render_template('registration.html',
+                                       message="произошла ошибка (email уже используется, но это не точно)",
+                                       form=form)
         return render_template('registration.html',
                                message="пароли не совпадают",
                                form=form)
@@ -91,6 +105,24 @@ def logout():
     return redirect("/")
 
 
+@login_required
+@app.route('/question', methods=['GET', 'POST'])
+def new_question():
+    form = QuestionForm()
+    if form.validate_on_submit():
+        db_session.global_init("db/blogs.db")
+        db_sess = db_session.create_session()
+        question = Question()
+        question.text = form.text.data
+        question.user_id = current_user.id
+        question.author_username = current_user.username
+        question.personal = form.personal.data
+        print(question.personal)
+        db_sess.add(question)
+        db_sess.commit()
+        return redirect("/index")
+    return render_template('new_question.html', title='Задать вопрос', form=form)
+
+
 if __name__ == '__main__':
     app.run(port=8080, host='127.0.0.1')
-

@@ -1,10 +1,25 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Index page</h1>
+    <h1>Вопросы</h1>
     {% if current_user.is_authenticated %}
         {% if current_user.role == "Operator" %}
-            <h3>Вы вошли как Оператор</h3>
+                <a class="btn btn-success" href="/question">Задать вопрос</a>
+                {% for question in quests %}
+                    {% if question.personal %}
+                        {% if question.user_id == current_user.id %}
+                        <p>
+                            {{ question.author_username }}<br>
+                            {{ question.text }}
+                        </p>
+                        {% endif %}
+                        {% else %}
+                        <p>
+                            {{ question.author_username }}<br>
+                            {{ question.text }}
+                        </p>
+                    {% endif %}
+                {% endfor %}
             {% elif current_user.role == "Admin" %}
                 <h3>Вы вошли как Администратор</h3>
             {% elif current_user.role == "Specialist" %}
