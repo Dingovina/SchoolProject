@@ -8,8 +8,10 @@
                     {% if not question.answered %}
                         {% if not question.personal and question.user_id != current_user.id %}
                             <p>
+                                <div class="alert alert-danger" role="alert">
                                 {{ question.author_username }}<br>
                                 <textarea rows="2" cols="50" disabled>{{question.text}}</textarea>
+                                </div>
                             </p>
                         {% endif %}
                     {% endif %}
@@ -19,8 +21,10 @@
                     {% if question.answered %}
                         {% if not question.personal and question.user_id != current_user.id %}
                             <p>
+                                <div class="alert alert-success" role="alert">
                                 {{ question.author_username }}<br>
                                 <textarea rows="2" cols="50" disabled>{{question.text}}</textarea><br>
+                                </div>
                                 <a class="btn btn-success" href="/open/{{ question.id }}">Посмотреть ответ</a>
                             </p>
                         {% endif %}
@@ -32,8 +36,10 @@
                     {% if question.priority == "red" %}
                         {% if question.answered == False %}
                             <p>
+                                <div class="alert alert-danger" role="alert">
                                 {{ question.author_username }}<br>
                                 <textarea rows="2" cols="50" disabled>{{question.text}}</textarea>
+                                </div>
                             </p>
                         {% endif %}
                     {% endif %}
@@ -42,8 +48,10 @@
                     {% if question.priority == "yellow" %}
                         {% if question.answered == False %}
                             <p>
+                                <div class="alert alert-warning" role="alert">
                                 {{ question.author_username }}<br>
                                 <textarea rows="2" cols="50" disabled>{{question.text}}</textarea>
+                                </div>
                             </p>
                         {% endif %}
                     {% endif %}
@@ -52,8 +60,10 @@
                     {% if question.priority == "green" %}
                         {% if question.answered == False %}
                             <p>
+                                <div class="alert alert-primary" role="alert">
                                 {{ question.author_username }}<br>
                                 <textarea rows="2" cols="50" disabled>{{question.text}}</textarea>
+                                </div>
                             </p>
                         {% endif %}
                     {% endif %}
@@ -62,8 +72,10 @@
                 {% for question in quests %}
                         {% if question.answered == True %}
                             <p>
+                                <div class="alert alert-success" role="alert">
                                 {{ question.author_username }}<br>
                                 <textarea rows="2" cols="50" disabled>{{question.text}}</textarea><br>
+                                </div>
                                 <a class="btn btn-success" href="/open/{{ question.id }}">Открыть ответ</a>
                             </p>
                         {% endif %}
@@ -74,8 +86,10 @@
                     {% if question.priority == "red" %}
                         {% if question.answered == False %}
                             <p>
+                                <div class="alert alert-danger" role="alert">
                                 {{ question.author_username }}<br>
                                 <textarea rows="2" cols="50" disabled>{{question.text}}</textarea><br>
+                                </div>
                                 <a class="btn btn-success" href="/add_answer/{{ question.id }}">Добавить ответ</a>
                             </p>
                         {% endif %}
@@ -85,8 +99,10 @@
                     {% if question.priority == "yellow" %}
                         {% if question.answered == False %}
                             <p>
+                                <div class="alert alert-warning" role="alert">
                                 {{ question.author_username }}<br>
                                 <textarea rows="2" cols="50" disabled>{{question.text}}</textarea><br>
+                                </div>
                                 <a class="btn btn-success" href="/add_answer/{{ question.id }}">Добавить ответ</a>
                             </p>
                         {% endif %}
@@ -96,8 +112,10 @@
                     {% if question.priority == "green" %}
                         {% if question.answered == False %}
                             <p>
+                                <div class="alert alert-primary" role="alert">
                                 {{ question.author_username }}<br>
                                 <textarea rows="2" cols="50" disabled>{{question.text}}</textarea><br>
+                                </div>
                                 <a class="btn btn-success" href="/add_answer/{{ question.id }}">Добавить ответ</a>
                             </p>
                         {% endif %}
@@ -107,8 +125,10 @@
                 {% for question in quests %}
                         {% if question.answered == True %}
                             <p>
+                                <div class="alert alert-success" role="alert">
                                 {{ question.author_username }}<br>
                                 <textarea rows="2" cols="50" disabled >{{question.text}}</textarea><br>
+                                </div>
                                 <a class="btn btn-success" href="/open/{{ question.id }}">Открыть ответ</a>
                             </p>
                         {% endif %}
