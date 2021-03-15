@@ -3,27 +3,13 @@
 {% block content %}
     {% if current_user.is_authenticated %}
         {% if current_user.role == "Operator" %}
-                <a class="btn btn-success" href="/question">Задать вопрос</a>
                 <h1>Активные вопросы</h1>
                 {% for question in quests %}
                     {% if not question.answered %}
-                        {% if question.personal %}
-                            {% if question.user_id == current_user.id %}
+                        {% if not question.personal and question.user_id != current_user.id %}
                             <p>
                                 {{ question.author_username }}<br>
                                 <textarea rows="2" cols="50" disabled>{{question.text}}</textarea>
-                                {% if question.user_id == current_user.id %}
-                                    <a class="btn btn-success" href="/delete/{{ question.id }}">Удалить вопрос</a>
-                                {% endif %}
-                            </p>
-                            {% endif %}
-                            {% else %}
-                            <p>
-                                {{ question.author_username }}<br>
-                                <textarea rows="2" cols="50" disabled>{{question.text}}</textarea>
-                                {% if question.user_id == current_user.id %}
-                                    <a class="btn btn-success" href="/delete/{{ question.id }}">Удалить вопрос</a>
-                                {% endif %}
                             </p>
                         {% endif %}
                     {% endif %}
@@ -31,56 +17,98 @@
                 <h1>Решённые вопросы</h1>
                 {% for question in quests %}
                     {% if question.answered %}
-                        {% if question.personal %}
-                            {% if question.user_id == current_user.id %}
+                        {% if not question.personal and question.user_id != current_user.id %}
                             <p>
                                 {{ question.author_username }}<br>
                                 <textarea rows="2" cols="50" disabled>{{question.text}}</textarea>
-                                <a class="btn btn-success" href="/open/{{ question.id }}">Открыть ответ</a>
-                                {% if question.user_id == current_user.id %}
-                                {% endif %}
-                            </p>
-                            {% endif %}
-                            {% else %}
-                            <p>
-                                {{ question.author_username }}<br>
-                                <textarea rows="2" cols="50" disabled>{{question.text}}</textarea>
-                                <a class="btn btn-success" href="/open/{{ question.id }}">Открыть ответ</a>
-                                {% if question.user_id == current_user.id %}
-                                {% endif %}
+                                <a class="btn btn-success" href="/open/{{ question.id }}">Посмотреть ответ</a>
                             </p>
                         {% endif %}
                     {% endif %}
                 {% endfor %}
             {% elif current_user.role == "Admin" %}
-                <h1>Все пользователи</h1>
-                {% for user in all_users %}
-                    <p>
-                        {{ user.id }} {{ user.username }} - {{ user.role }}
-                        {% if user.role == "Operator" %}
-                            <a class="btn btn-success" href="/specialist/{{ user.id }}">Назначить Специалистом</a>
-                            {% elif user.role == "Specialist" %}
-                            <a class="btn btn-success" href="/operator/{{ user.id }}">Назначить Оператором</a>
-                        {% endif %}
-                    </p>
-                {% endfor %}
-            {% elif current_user.role == "Specialist" %}
                 <h3>Активные вопросы</h3>
                 {% for question in quests %}
+                    {% if question.priority == "red" %}
                         {% if question.answered == False %}
                             <p>
                                 {{ question.author_username }}<br>
-                                {{ question.shorted_text }}<br>
-                                <a class="btn btn-success" href="/add_answer/{{ question.id }}">Добавить ответ</a>
+                                <textarea rows="2" cols="50" disabled>{{question.text}}</textarea>
                             </p>
                         {% endif %}
+                    {% endif %}
+                {% endfor %}
+                {% for question in quests %}
+                    {% if question.priority == "yellow" %}
+                        {% if question.answered == False %}
+                            <p>
+                                {{ question.author_username }}<br>
+                                <textarea rows="2" cols="50" disabled>{{question.text}}</textarea>
+                            </p>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+                {% for question in quests %}
+                    {% if question.priority == "green" %}
+                        {% if question.answered == False %}
+                            <p>
+                                {{ question.author_username }}<br>
+                                <textarea rows="2" cols="50" disabled>{{question.text}}</textarea>
+                            </p>
+                        {% endif %}
+                    {% endif %}
                 {% endfor %}
                 <h3>Решённые вопросы</h3>
                 {% for question in quests %}
                         {% if question.answered == True %}
                             <p>
                                 {{ question.author_username }}<br>
-                                {{ question.shorted_text }}
+                                <textarea rows="2" cols="50" disabled>{{question.text}}</textarea>
+                                <a class="btn btn-success" href="/open/{{ question.id }}">Открыть ответ</a>
+                            </p>
+                        {% endif %}
+                {% endfor %}
+            {% elif current_user.role == "Specialist" %}
+                <h3>Активные вопросы</h3>
+                {% for question in quests %}
+                    {% if question.priority == "red" %}
+                        {% if question.answered == False %}
+                            <p>
+                                {{ question.author_username }}<br>
+                                <textarea rows="2" cols="50" disabled>{{question.text}}</textarea><br>
+                                <a class="btn btn-success" href="/add_answer/{{ question.id }}">Добавить ответ</a>
+                            </p>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+                {% for question in quests %}
+                    {% if question.priority == "yellow" %}
+                        {% if question.answered == False %}
+                            <p>
+                                {{ question.author_username }}<br>
+                                <textarea rows="2" cols="50" disabled>{{question.text}}</textarea><br>
+                                <a class="btn btn-success" href="/add_answer/{{ question.id }}">Добавить ответ</a>
+                            </p>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+                {% for question in quests %}
+                    {% if question.priority == "green" %}
+                        {% if question.answered == False %}
+                            <p>
+                                {{ question.author_username }}<br>
+                                <textarea rows="2" cols="50" disabled>{{question.text}}</textarea><br>
+                                <a class="btn btn-success" href="/add_answer/{{ question.id }}">Добавить ответ</a>
+                            </p>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+                <h3>Решённые вопросы</h3>
+                {% for question in quests %}
+                        {% if question.answered == True %}
+                            <p>
+                                {{ question.author_username }}<br>
+                                <textarea rows="2" cols="50" disabled >{{question.text}}</textarea><br>
                                 <a class="btn btn-success" href="/open/{{ question.id }}">Открыть ответ</a>
                             </p>
                         {% endif %}

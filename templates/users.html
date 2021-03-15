@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% for user in all_users %}
+        <p>
+            {{ user.id }} {{ user.username }} - {{ user.role }}
+            {% if user.role == "Operator" %}
+                <a class="btn btn-success" href="/specialist/{{ user.id }}">Назначить Специалистом</a>
+                {% elif user.role == "Specialist" %}
+                <a class="btn btn-success" href="/operator/{{ user.id }}">Назначить Оператором</a>
+            {% endif %}
+        </p>
+    {% endfor %}
+{% endblock %}

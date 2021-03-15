@@ -5,7 +5,7 @@ from data.questions import Question
 import datetime
 from flask import Flask, redirect, render_template
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, RadioField
 from wtforms.validators import DataRequired
 
 
@@ -27,6 +27,7 @@ class LoginForm(FlaskForm):
 class QuestionForm(FlaskForm):
     text = StringField('Вопрос', validators=[DataRequired()])
     personal = BooleanField('Личное')
+    priority = RadioField('Выберите срочность', choices=[('green', 'Не срочно'), ('yellow', 'Cрочно'), ('red', 'Oчень срочно')])
     submit = SubmitField('Задать вопрос')
 
 
@@ -97,7 +98,7 @@ def login():
         user = db_sess.query(User).filter(User.email == form.email.data).first()
         if user and user.check_password(form.password.data):
             login_user(user, remember=form.remember_me.data)
-            return redirect("/index")
+            return redirect("/profile")
         return render_template('login.html',
                                message="Неправильный логин или пароль",
                                form=form)
@@ -124,10 +125,11 @@ def new_question():
         question.user_id = current_user.id
         question.author_username = current_user.username
         question.personal = form.personal.data
+        question.priority = form.priority.data
         print(question.personal)
         db_sess.add(question)
         db_sess.commit()
-        return redirect("/index")
+        return redirect("/profile")
     return render_template('new_question.html', title='Задать вопрос', form=form)
 
 
@@ -140,7 +142,7 @@ def make_spec(id):
         user = db_sess.query(User).filter(User.id == id).first()
         user.role = 'Specialist'
         db_sess.commit()
-        return redirect('/index')
+        return redirect('/users')
     else:
         return "Недостаточно прав."
 
@@ -154,7 +156,7 @@ def make_oper(id):
         user = db_sess.query(User).filter(User.id == id).first()
         user.role = 'Operator'
         db_sess.commit()
-        return redirect('/index')
+        return redirect('/users')
     else:
         return "Недостаточно прав."
 
@@ -176,7 +178,7 @@ def delete_quest(id):
     question = db_sess.query(Question).filter(Question.id == id).first()
     db_sess.delete(question)
     db_sess.commit()
-    return redirect('/index')
+    return redirect('/profile')
 
 
 @login_required
@@ -197,6 +199,30 @@ def add_answer(id):
         db_sess = db_session.create_session()
         question = db_sess.query(Question).filter(Question.id == id).first()
         return render_template('add_answer.html', quest=question, form=form)
+    else:
+        return redirect('/index')
+
+
+@login_required
+@app.route('/users')
+def users():
+    if current_user.role == 'Admin':
+        db_session.global_init("db/blogs.db")
+        db_sess = db_session.create_session()
+        all_users = db_sess.query(User).all()
+        return render_template('users.html', all_users=all_users)
+    else:
+        return redirect('/index')
+
+
+@login_required
+@app.route('/profile')
+def profile():
+    if current_user.role == 'Operator':
+        db_session.global_init("db/blogs.db")
+        db_sess = db_session.create_session()
+        all_quests = db_sess.query(Question).all()
+        return render_template('profile.html', quests=all_quests)
     else:
         return redirect('/index')
 

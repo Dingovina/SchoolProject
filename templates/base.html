@@ -15,7 +15,19 @@
     <nav class="navbar navbar-light bg-light">
         {% if current_user.is_authenticated %}
         <p>
-            <a class="navbar-brand" href="/logout">{{ current_user.username }}</a>
+            <a class="btn" href="/profile">{{ current_user.username }}</a>
+            <p>
+                {% if current_user.role == "Admin" %}
+                        <a class="btn btn-success" href="/index">Вопросы</a>
+                        <a class="btn btn-success" href="/users">Пользователи</a>
+                {% elif current_user.role == "Operator" %}
+                        <a class="btn btn-success" href="/question">Задать вопрос</a>
+                        <a class="btn btn-success" href="/index">Вопросы других пользователей</a>
+                {% endif %}
+            </p>
+        </p>
+        <p>
+            <a class="btn btn-danger" href="/logout">Выйти</a>
         </p>
         {% else %}
             <p>
