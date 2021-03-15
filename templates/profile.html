@@ -7,7 +7,8 @@
             {% if question.user_id == current_user.id %}
                 <p>
                     {{ question.author_username }}<br>
-                    <textarea rows="2" cols="50" disabled>{{question.text}}</textarea>
+                    <textarea rows="2" cols="50" disabled>{{question.text}}</textarea><br>
+                    <a class="btn btn-success" href="/delete/{{ question.id }}">Удалить вопрос</a>
                 </p>
             {% endif %}
         {% endif %}
@@ -18,7 +19,7 @@
             {% if question.user_id == current_user.id %}
                 <p>
                     {{ question.author_username }}<br>
-                    <textarea rows="2" cols="50" disabled>{{question.text}}</textarea>
+                    <textarea rows="2" cols="50" disabled>{{question.text}}</textarea><br>
                     <a class="btn btn-success" href="/open/{{ question.id }}">Посмотреть ответ</a>
                 </p>
             {% endif %}

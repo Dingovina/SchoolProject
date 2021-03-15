@@ -20,7 +20,7 @@
                         {% if not question.personal and question.user_id != current_user.id %}
                             <p>
                                 {{ question.author_username }}<br>
-                                <textarea rows="2" cols="50" disabled>{{question.text}}</textarea>
+                                <textarea rows="2" cols="50" disabled>{{question.text}}</textarea><br>
                                 <a class="btn btn-success" href="/open/{{ question.id }}">Посмотреть ответ</a>
                             </p>
                         {% endif %}
@@ -63,7 +63,7 @@
                         {% if question.answered == True %}
                             <p>
                                 {{ question.author_username }}<br>
-                                <textarea rows="2" cols="50" disabled>{{question.text}}</textarea>
+                                <textarea rows="2" cols="50" disabled>{{question.text}}</textarea><br>
                                 <a class="btn btn-success" href="/open/{{ question.id }}">Открыть ответ</a>
                             </p>
                         {% endif %}
