@@ -1,8 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Вопрос номер {{ quest.id }}</h1>
+    <h1>Вопрос пользователя {{ quest.author_username }}</h1>
     <p>
-        {{ quest.text }}
+        <textarea rows="2" cols="100" readonly>{{ quest.text }}</textarea>
+    </p>
+    <h1>Ответ специалиста {{ quest.answer_author }}</h1>
+    <p>
+        <textarea rows="2" cols="100" readonly>{{ quest.answer }}</textarea>
     </p>
 {% endblock %}

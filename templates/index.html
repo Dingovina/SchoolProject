@@ -57,6 +57,7 @@
                             <p>
                                 {{ question.author_username }}<br>
                                 {{ question.shorted_text }}
+                                <a class="btn btn-success" href="/open/{{ question.id }}">Открыть ответ</a>
                             </p>
                         {% endif %}
                 {% endfor %}
