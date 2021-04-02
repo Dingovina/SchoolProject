@@ -10,7 +10,10 @@
                             <p>
                                 <div class="alert alert-danger" role="alert">
                                 {{ question.author_username }}<br>
-                                <textarea rows="2" cols="50" disabled>{{question.text}}</textarea>
+                                <textarea rows="2" cols="50" disabled>{{question.text}}</textarea><br>
+                                {% for tag in question.tags.split(', ') %}
+                                    <a class="btn" href="/index&tag={{tag}}">{{ tag }}</a>
+                                {% endfor %}
                                 </div>
                             </p>
                         {% endif %}
@@ -24,6 +27,9 @@
                                 <div class="alert alert-success" role="alert">
                                 {{ question.author_username }}<br>
                                 <textarea rows="2" cols="50" disabled>{{question.text}}</textarea><br>
+                                {% for tag in question.tags.split(', ') %}
+                                    <a class="btn" href="/index&tag={{tag}}">{{ tag }}</a>
+                                {% endfor %}
                                 </div>
                                 <a class="btn btn-success" href="/open/{{ question.id }}">Посмотреть ответ</a>
                             </p>
@@ -38,7 +44,10 @@
                             <p>
                                 <div class="alert alert-danger" role="alert">
                                 {{ question.author_username }}<br>
-                                <textarea rows="2" cols="50" disabled>{{question.text}}</textarea>
+                                <textarea rows="2" cols="50" disabled>{{question.text}}</textarea><br>
+                                {% for tag in question.tags.split(', ') %}
+                                    <a class="btn" href="/index&tag={{tag}}">{{ tag }}</a>
+                                {% endfor %}
                                 </div>
                             </p>
                         {% endif %}
@@ -50,7 +59,10 @@
                             <p>
                                 <div class="alert alert-warning" role="alert">
                                 {{ question.author_username }}<br>
-                                <textarea rows="2" cols="50" disabled>{{question.text}}</textarea>
+                                <textarea rows="2" cols="50" disabled>{{question.text}}</textarea><br>
+                                {% for tag in question.tags.split(', ') %}
+                                    <a class="btn" href="/index&tag={{tag}}">{{ tag }}</a>
+                                {% endfor %}
                                 </div>
                             </p>
                         {% endif %}
@@ -62,7 +74,10 @@
                             <p>
                                 <div class="alert alert-primary" role="alert">
                                 {{ question.author_username }}<br>
-                                <textarea rows="2" cols="50" disabled>{{question.text}}</textarea>
+                                <textarea rows="2" cols="50" disabled>{{question.text}}</textarea><br>
+                                {% for tag in question.tags.split(', ') %}
+                                    <a class="btn" href="/index&tag={{tag}}">{{ tag }}</a>
+                                {% endfor %}
                                 </div>
                             </p>
                         {% endif %}
@@ -75,6 +90,9 @@
                                 <div class="alert alert-success" role="alert">
                                 {{ question.author_username }}<br>
                                 <textarea rows="2" cols="50" disabled>{{question.text}}</textarea><br>
+                                {% for tag in question.tags.split(', ') %}
+                                    <a class="btn" href="/index&tag={{tag}}">{{ tag }}</a>
+                                {% endfor %}
                                 </div>
                                 <a class="btn btn-success" href="/open/{{ question.id }}">Открыть ответ</a>
                             </p>
@@ -89,6 +107,9 @@
                                 <div class="alert alert-danger" role="alert">
                                 {{ question.author_username }}<br>
                                 <textarea rows="2" cols="50" disabled>{{question.text}}</textarea><br>
+                                {% for tag in question.tags.split(', ') %}
+                                    <a class="btn" href="/index&tag={{tag}}">{{ tag }}</a>
+                                {% endfor %}
                                 </div>
                                 <a class="btn btn-success" href="/add_answer/{{ question.id }}">Добавить ответ</a>
                             </p>
@@ -102,6 +123,9 @@
                                 <div class="alert alert-warning" role="alert">
                                 {{ question.author_username }}<br>
                                 <textarea rows="2" cols="50" disabled>{{question.text}}</textarea><br>
+                                {% for tag in question.tags.split(', ') %}
+                                    <a class="btn" href="/index&tag={{tag}}">{{ tag }}</a>
+                                {% endfor %}
                                 </div>
                                 <a class="btn btn-success" href="/add_answer/{{ question.id }}">Добавить ответ</a>
                             </p>
@@ -115,6 +139,9 @@
                                 <div class="alert alert-primary" role="alert">
                                 {{ question.author_username }}<br>
                                 <textarea rows="2" cols="50" disabled>{{question.text}}</textarea><br>
+                                {% for tag in question.tags.split(', ') %}
+                                    <a class="btn" href="/index&tag={{tag}}">{{ tag }}</a>
+                                {% endfor %}
                                 </div>
                                 <a class="btn btn-success" href="/add_answer/{{ question.id }}">Добавить ответ</a>
                             </p>
@@ -128,9 +155,11 @@
                                 <div class="alert alert-success" role="alert">
                                 {{ question.author_username }}<br>
                                 <textarea rows="2" cols="50" disabled >{{question.text}}</textarea><br>
+                                {% for tag in question.tags.split(', ') %}
+                                    <a class="btn" href="/index&tag={{tag}}">{{ tag }}</a>
+                                {% endfor %}
                                 </div>
                                 <a class="btn btn-success" href="/open/{{ question.id }}">Открыть ответ</a>
-                            </p>
                         {% endif %}
                 {% endfor %}
         {% endif %}

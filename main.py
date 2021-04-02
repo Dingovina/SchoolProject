@@ -27,7 +27,17 @@ class LoginForm(FlaskForm):
 class QuestionForm(FlaskForm):
     text = StringField('Вопрос', validators=[DataRequired()])
     personal = BooleanField('Личное')
-    priority = RadioField('Выберите срочность', choices=[('green', 'Не срочно'), ('yellow', 'Cрочно'), ('red', 'Oчень срочно')])
+    priority = RadioField('Выберите срочность',
+                          choices=[('green', 'Не срочно'), ('yellow', 'Срочно'), ('red', 'Oчень срочно')])
+    tag_py = BooleanField('Python')
+    tag_word = BooleanField('Word')
+    tag_excel = BooleanField('Excel')
+    tag_powerpoint = BooleanField('Power Point')
+    tag_paint = BooleanField('Paint')
+    tag_browser = BooleanField('Браузер')
+    tag_other_app = BooleanField('Другое приложение')
+    tag_unopen = BooleanField('Не открывается')
+    tag_lag = BooleanField('Лагает')
     submit = SubmitField('Задать вопрос')
 
 
@@ -126,6 +136,26 @@ def new_question():
         question.author_username = current_user.username
         question.personal = form.personal.data
         question.priority = form.priority.data
+        tags = []
+        if form.tag_py.data:
+            tags.append('Python')
+        if form.tag_word.data:
+            tags.append('Word')
+        if form.tag_excel.data:
+            tags.append('Excel')
+        if form.tag_powerpoint.data:
+            tags.append('Power Point')
+        if form.tag_paint.data:
+            tags.append('Paint')
+        if form.tag_browser.data:
+            tags.append('Браузер')
+        if form.tag_other_app.data:
+            tags.append('Другое приложение')
+        if form.tag_lag.data:
+            tags.append('Плохо работает')
+        if form.tag_unopen.data:
+            tags.append('Не открывается')
+        question.tags = ', '.join(tags)
         print(question.personal)
         db_sess.add(question)
         db_sess.commit()
@@ -227,5 +257,16 @@ def profile():
         return redirect('/index')
 
 
+@login_required
+@app.route('/index&tag=<tag>')
+def index_tag(tag):
+    if current_user.role == 'Specialist':
+        db_session.global_init("db/blogs.db")
+        db_sess = db_session.create_session()
+        all_users = db_sess.query(User).all()
+        all_quests = db_sess.query(Question).all()
+        return render_template('index_tag.html', TAG=tag, quests=all_quests)
+
+
 if __name__ == '__main__':
-    app.run(port=8080, host='127.0.0.1')
+    app.run(port=5050, host='127.0.0.1')
