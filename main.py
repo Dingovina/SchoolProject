@@ -25,7 +25,7 @@ class LoginForm(FlaskForm):
 
 
 class QuestionForm(FlaskForm):
-    text = StringField('Вопрос', validators=[DataRequired()])
+    text = TextAreaField('Вопрос', validators=[DataRequired()])
     personal = BooleanField('Личное')
     priority = RadioField('Выберите срочность',
                           choices=[('green', 'Не срочно'), ('yellow', 'Срочно'), ('red', 'Oчень срочно')])
