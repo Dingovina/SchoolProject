@@ -1,38 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Активные вопросы</h1>
-    {% for question in quests %}
-        {% if not question.answered %}
-            {% if question.user_id == current_user.id %}
-                <p>
-                    <div class="alert alert-danger" role="alert">
-                    {{ question.author_username }}<br>
-                    <textarea rows="2" cols="50" disabled>{{question.text}}</textarea><br>
-                    {% for tag in question.tags.split(', ') %}
-                        <a class="btn" href="/index&tag={{tag}}">{{ tag }}</a>
-                    {% endfor %}
-                    </div>
-                    <a class="btn btn-danger" href="/delete/{{ question.id }}">Удалить вопрос</a>
-                </p>
-            {% endif %}
-        {% endif %}
-    {% endfor %}
-    <h1>Решённые вопросы</h1>
-    {% for question in quests %}
-        {% if question.answered %}
-            {% if question.user_id == current_user.id %}
-                <p>
-                    <div class="alert alert-success" role="alert">
-                    {{ question.author_username }}<br>
-                    <textarea rows="2" cols="50" disabled>{{question.text}}</textarea><br>
-                    {% for tag in question.tags.split(', ') %}
-                        <a class="btn" href="/index&tag={{tag}}">{{ tag }}</a>
-                    {% endfor %}
-                    </div>
-                    <a class="btn btn-success" href="/open/{{ question.id }}">Посмотреть ответ</a>
-                </p>
-            {% endif %}
-        {% endif %}
-    {% endfor %}
+<h1>
+    TO DO
+</h1>
+<h3>
+    - Add data to everything<br>
+    - Add sorting by data<br>
+    - Rename "Profile" and "Index"<br>
+</h3>
 {% endblock %}

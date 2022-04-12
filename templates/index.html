@@ -2,167 +2,74 @@
 
 {% block content %}
     {% if current_user.is_authenticated %}
-        {% if current_user.role == "Operator" %}
-                <h1>Активные вопросы</h1>
-                {% for question in quests %}
-                    {% if not question.answered %}
-                        {% if not question.personal and question.user_id != current_user.id %}
-                            <p>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                {% for col_name in data.keys() %}
+                    <td style="font-size: 20px; vertical-align: bottom;" align="right" width="150px"><b>{{ col_name }}</b></td>
+                    <td width="100px"><a class="btn btn-danger" href="/del/{{ col_name }}">-</a></td>
+                {% endfor %}
+                {% if status == "new" %}
+                    <form action="" method="post"><td scope="col" width="200px">{{ form1.hidden_tag() }}
+                            {{ form1.column_name(class="form-control", type="text", size="1px", autocomplete="off", placeholder="New Column") }}</td>
+                            <td>{{ form1.submit(type="submit", class="btn btn-primary") }}
+                            {% for error in form1.column_name.errors %}
                                 <div class="alert alert-danger" role="alert">
-                                {{ question.author_username }}<br>
-                                <textarea rows="2" cols="50" disabled>{{question.text}}</textarea><br>
-                                {% for tag in question.tags.split(', ') %}
-                                    <a class="btn" href="/index&tag={{tag}}">{{ tag }}</a>
-                                {% endfor %}
+                                    {{ error }}
                                 </div>
-                            </p>
+                            {% endfor %}
+                    </td></form>
+                {% else %}
+                    <td scope="col"><a class="btn btn-success" href="/index/new">+</a></td>
+                {% endif %}
+            </tr>
+            </thead>
+            <tbody>
+            {% if status == -1 %}
+                <tr>
+                    {% for k in data.keys() %}
+                        <td></td>
+                        <td><a class="btn btn-success" href="/index/{{ k }}">+</a></td>
+                    {% endfor %}
+                </tr>
+            {% else %}
+                <tr>
+                    {% for k in data.keys() %}
+                        {% if k == status %}
+                        <form action="" method="post"><td width="100px">
+                                {{ form.hidden_tag() }}
+                                {{ form.summa(class="form-control", type="integer", autocomplete="off", placeholder="00000") }}</td>
+                            <td>
+                                {{ form.submit(type="submit", class="btn btn-primary") }}
+                        </td></form>
+                        {% else %}
+                            <td></td>
+                            <td><a class="btn btn-success" href="/index/{{ k }}">+</a></td>
                         {% endif %}
+                    {% endfor %}
+                </tr>
+            {% endif %}
+            {% for i in range(max_size) %}
+            <tr>
+                {% for k in data.keys() %}
+                    {% if data[k][i] %}
+                        <td width="150px" align="right">{{ data[k][i] }}</td>
+                        <td width="100px"><a class="btn btn-danger" href="/del/{{ k }}/{{ i }}">-</a></td>
+                    {% else %}
+                        <td width="150px"></td>
+                        <td width="100px"></td>
                     {% endif %}
                 {% endfor %}
-                <h1>Решённые вопросы</h1>
-                {% for question in quests %}
-                    {% if question.answered %}
-                        {% if not question.personal and question.user_id != current_user.id %}
-                            <p>
-                                <div class="alert alert-success" role="alert">
-                                {{ question.author_username }}<br>
-                                <textarea rows="2" cols="50" disabled>{{question.text}}</textarea><br>
-                                {% for tag in question.tags.split(', ') %}
-                                    <a class="btn" href="/index&tag={{tag}}">{{ tag }}</a>
-                                {% endfor %}
-                                </div>
-                                <a class="btn btn-success" href="/open/{{ question.id }}">Посмотреть ответ</a>
-                            </p>
-                        {% endif %}
-                    {% endif %}
+            </tr>
+            {% endfor %}
+            <tr>
+                {% for n in sums %}
+                    <td bgcolor="#00AA00" align="right" style="font-size: 22px"><b>{{ n }}</b></td>
+                    <td bgcolor="#00AA00"></td>
                 {% endfor %}
-            {% elif current_user.role == "Admin" %}
-                <h3>Активные вопросы</h3>
-                {% for question in quests %}
-                    {% if question.priority == "red" %}
-                        {% if question.answered == False %}
-                            <p>
-                                <div class="alert alert-danger" role="alert">
-                                {{ question.author_username }}<br>
-                                <textarea rows="2" cols="50" disabled>{{question.text}}</textarea><br>
-                                {% for tag in question.tags.split(', ') %}
-                                    <a class="btn" href="/index&tag={{tag}}">{{ tag }}</a>
-                                {% endfor %}
-                                </div>
-                            </p>
-                        {% endif %}
-                    {% endif %}
-                {% endfor %}
-                {% for question in quests %}
-                    {% if question.priority == "yellow" %}
-                        {% if question.answered == False %}
-                            <p>
-                                <div class="alert alert-warning" role="alert">
-                                {{ question.author_username }}<br>
-                                <textarea rows="2" cols="50" disabled>{{question.text}}</textarea><br>
-                                {% for tag in question.tags.split(', ') %}
-                                    <a class="btn" href="/index&tag={{tag}}">{{ tag }}</a>
-                                {% endfor %}
-                                </div>
-                            </p>
-                        {% endif %}
-                    {% endif %}
-                {% endfor %}
-                {% for question in quests %}
-                    {% if question.priority == "green" %}
-                        {% if question.answered == False %}
-                            <p>
-                                <div class="alert alert-primary" role="alert">
-                                {{ question.author_username }}<br>
-                                <textarea rows="2" cols="50" disabled>{{question.text}}</textarea><br>
-                                {% for tag in question.tags.split(', ') %}
-                                    <a class="btn" href="/index&tag={{tag}}">{{ tag }}</a>
-                                {% endfor %}
-                                </div>
-                            </p>
-                        {% endif %}
-                    {% endif %}
-                {% endfor %}
-                <h3>Решённые вопросы</h3>
-                {% for question in quests %}
-                        {% if question.answered == True %}
-                            <p>
-                                <div class="alert alert-success" role="alert">
-                                {{ question.author_username }}<br>
-                                <textarea rows="2" cols="50" disabled>{{question.text}}</textarea><br>
-                                {% for tag in question.tags.split(', ') %}
-                                    <a class="btn" href="/index&tag={{tag}}">{{ tag }}</a>
-                                {% endfor %}
-                                </div>
-                                <a class="btn btn-success" href="/open/{{ question.id }}">Открыть ответ</a>
-                            </p>
-                        {% endif %}
-                {% endfor %}
-            {% elif current_user.role == "Specialist" %}
-                <h3>Активные вопросы</h3>
-                {% for question in quests %}
-                    {% if question.priority == "red" %}
-                        {% if question.answered == False %}
-                            <p>
-                                <div class="alert alert-danger" role="alert">
-                                {{ question.author_username }}<br>
-                                <textarea rows="2" cols="50" disabled>{{question.text}}</textarea><br>
-                                {% for tag in question.tags.split(', ') %}
-                                    <a class="btn" href="/index&tag={{tag}}">{{ tag }}</a>
-                                {% endfor %}
-                                </div>
-                                <a class="btn btn-success" href="/add_answer/{{ question.id }}">Добавить ответ</a>
-                            </p>
-                        {% endif %}
-                    {% endif %}
-                {% endfor %}
-                {% for question in quests %}
-                    {% if question.priority == "yellow" %}
-                        {% if question.answered == False %}
-                            <p>
-                                <div class="alert alert-warning" role="alert">
-                                {{ question.author_username }}<br>
-                                <textarea rows="2" cols="50" disabled>{{question.text}}</textarea><br>
-                                {% for tag in question.tags.split(', ') %}
-                                    <a class="btn" href="/index&tag={{tag}}">{{ tag }}</a>
-                                {% endfor %}
-                                </div>
-                                <a class="btn btn-success" href="/add_answer/{{ question.id }}">Добавить ответ</a>
-                            </p>
-                        {% endif %}
-                    {% endif %}
-                {% endfor %}
-                {% for question in quests %}
-                    {% if question.priority == "green" %}
-                        {% if question.answered == False %}
-                            <p>
-                                <div class="alert alert-primary" role="alert">
-                                {{ question.author_username }}<br>
-                                <textarea rows="2" cols="50" disabled>{{question.text}}</textarea><br>
-                                {% for tag in question.tags.split(', ') %}
-                                    <a class="btn" href="/index&tag={{tag}}">{{ tag }}</a>
-                                {% endfor %}
-                                </div>
-                                <a class="btn btn-success" href="/add_answer/{{ question.id }}">Добавить ответ</a>
-                            </p>
-                        {% endif %}
-                    {% endif %}
-                {% endfor %}
-                <h3>Решённые вопросы</h3>
-                {% for question in quests %}
-                        {% if question.answered == True %}
-                            <p>
-                                <div class="alert alert-success" role="alert">
-                                {{ question.author_username }}<br>
-                                <textarea rows="2" cols="50" disabled >{{question.text}}</textarea><br>
-                                {% for tag in question.tags.split(', ') %}
-                                    <a class="btn" href="/index&tag={{tag}}">{{ tag }}</a>
-                                {% endfor %}
-                                </div>
-                                <a class="btn btn-success" href="/open/{{ question.id }}">Открыть ответ</a>
-                        {% endif %}
-                {% endfor %}
-        {% endif %}
+            </tr>
+            </tbody>
+        </table>
     {% else %}
         <h3>Вы не авторизованы</h3>
     {% endif %}

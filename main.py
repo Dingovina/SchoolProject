@@ -1,49 +1,37 @@
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from data import db_session
 from data.users import User
-from data.questions import Question
 import datetime
 from flask import Flask, redirect, render_template
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, RadioField
-from wtforms.validators import DataRequired
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, IntegerField
+from wtforms.validators import DataRequired, NumberRange
 
 
 class RegFrom(FlaskForm):
-    email = StringField('Почта', validators=[DataRequired()])
-    password = PasswordField('Пароль', validators=[DataRequired()])
-    repeat_password = PasswordField('Повторите пароль', validators=[DataRequired()])
-    username = StringField('Имя пользователя', validators=[DataRequired()])
-    submit = SubmitField('Зарегистрироваться')
+    email = StringField('Email', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    repeat_password = PasswordField('Confirm the password', validators=[DataRequired()])
+    username = StringField('Username', validators=[DataRequired()])
+    submit = SubmitField('Submit')
 
 
 class LoginForm(FlaskForm):
-    email = StringField('Почта', validators=[DataRequired()])
-    password = PasswordField('Пароль', validators=[DataRequired()])
-    remember_me = BooleanField('Запомнить меня')
-    submit = SubmitField('Войти')
+    email = StringField('Email', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    remember_me = BooleanField('Remember me')
+    submit = SubmitField('Login')
 
 
-class QuestionForm(FlaskForm):
-    text = TextAreaField('Вопрос', validators=[DataRequired()])
-    personal = BooleanField('Личное')
-    priority = RadioField('Выберите срочность',
-                          choices=[('green', 'Не срочно'), ('yellow', 'Срочно'), ('red', 'Oчень срочно')])
-    tag_py = BooleanField('Python')
-    tag_word = BooleanField('Word')
-    tag_excel = BooleanField('Excel')
-    tag_powerpoint = BooleanField('Power Point')
-    tag_paint = BooleanField('Paint')
-    tag_browser = BooleanField('Браузер')
-    tag_other_app = BooleanField('Другое приложение')
-    tag_unopen = BooleanField('Не открывается')
-    tag_lag = BooleanField('Лагает')
-    submit = SubmitField('Задать вопрос')
+class NewCol(FlaskForm):
+    column_name = StringField('', validators=[DataRequired(message="?")])
+    submit = SubmitField('V')
 
 
-class AnswerForm(FlaskForm):
-    answer = TextAreaField('Ваш ответ')
-    submit = SubmitField('Отправить ответ')
+class NewItem2(FlaskForm):
+    summa = IntegerField("", validators=[DataRequired(message="?"),
+                                         NumberRange(min=1, message='>0')])
+    submit = SubmitField("V")
 
 
 app = Flask(__name__)
@@ -56,14 +44,38 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 
 
+@app.route('/index/<s>', methods=['GET', 'POST'])
+@app.route('/index', methods=['GET', 'POST'])
 @login_required
-@app.route('/index')
-def index():
+def index(s=-1):
     db_session.global_init("db/blogs.db")
     db_sess = db_session.create_session()
-    all_users = db_sess.query(User).all()
-    all_quests = db_sess.query(Question).all()
-    return render_template('index.html', quests=all_quests, all_users=all_users)
+    user = db_sess.query(User).filter(User.id == current_user.id).first()
+    form = NewItem2()
+    form1 = NewCol()
+    local_dict = {}
+    exec(user.data, globals(), local_dict)
+    costs = local_dict["costs"]
+    if form.validate_on_submit():
+        costs[s].append(int(form.summa.data))
+        user.data = "costs = " + str(costs)
+        db_sess.commit()
+        return redirect("/index")
+    if form1.validate_on_submit():
+        col_name = form1.column_name.data
+        if col_name not in costs and col_name != "new":
+            print(123)
+            costs[col_name] = []
+            user.data = "costs = " + str(costs)
+            db_sess.commit()
+            return redirect("/index")
+        else:
+            pass
+    max_size = 0
+    sums = [sum(s) for s in costs.values()]
+    for k, v in costs.items():
+        max_size = max(max_size, len(v))
+    return render_template('index.html', data=costs, max_size=max_size, sums=sums, status=s, form=form, form1=form1)
 
 
 @login_manager.user_loader
@@ -71,6 +83,38 @@ def load_user(user_id):
     db_session.global_init("db/blogs.db")
     db_sess = db_session.create_session()
     return db_sess.query(User).get(user_id)
+
+
+@app.route('/del/<k>/<i>')
+@login_required
+def del_item(k, i):
+    db_session.global_init("db/blogs.db")
+    db_sess = db_session.create_session()
+    user = db_sess.query(User).filter(User.id == current_user.id).first()
+    local_dict = {}
+    exec(user.data, globals(), local_dict)
+    costs = local_dict["costs"]
+    if k in costs and len(costs[k]) > int(i):
+        costs[k].pop(int(i))
+    user.data = "costs = " + str(costs)
+    db_sess.commit()
+    return redirect("/index")
+
+
+@app.route('/del/<k>')
+@login_required
+def del_col(k):
+    db_session.global_init("db/blogs.db")
+    db_sess = db_session.create_session()
+    user = db_sess.query(User).filter(User.id == current_user.id).first()
+    local_dict = {}
+    exec(user.data, globals(), local_dict)
+    costs = local_dict["costs"]
+    if k in costs:
+        del costs[k]
+    user.data = "costs = " + str(costs)
+    db_sess.commit()
+    return redirect("/index")
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -108,7 +152,7 @@ def login():
         user = db_sess.query(User).filter(User.email == form.email.data).first()
         if user and user.check_password(form.password.data):
             login_user(user, remember=form.remember_me.data)
-            return redirect("/profile")
+            return redirect("/index/new")
         return render_template('login.html',
                                message="Неправильный логин или пароль",
                                form=form)
@@ -122,150 +166,12 @@ def logout():
     return redirect("/")
 
 
-@login_required
-@app.route('/question', methods=['GET', 'POST'])
-def new_question():
-    form = QuestionForm()
-    if form.validate_on_submit():
-        db_session.global_init("db/blogs.db")
-        db_sess = db_session.create_session()
-        question = Question()
-        question.text = form.text.data
-        question.shorted_text = form.text.data[:20] + '...' if len(form.text.data) > 20 else form.text.data
-        question.user_id = current_user.id
-        question.author_username = current_user.username
-        question.personal = form.personal.data
-        question.priority = form.priority.data
-        tags = []
-        if form.tag_py.data:
-            tags.append('Python')
-        if form.tag_word.data:
-            tags.append('Word')
-        if form.tag_excel.data:
-            tags.append('Excel')
-        if form.tag_powerpoint.data:
-            tags.append('Power Point')
-        if form.tag_paint.data:
-            tags.append('Paint')
-        if form.tag_browser.data:
-            tags.append('Браузер')
-        if form.tag_other_app.data:
-            tags.append('Другое приложение')
-        if form.tag_lag.data:
-            tags.append('Плохо работает')
-        if form.tag_unopen.data:
-            tags.append('Не открывается')
-        question.tags = ', '.join(tags)
-        print(question.personal)
-        db_sess.add(question)
-        db_sess.commit()
-        return redirect("/profile")
-    return render_template('new_question.html', title='Задать вопрос', form=form)
-
-
-@login_required
-@app.route('/specialist/<id>')
-def make_spec(id):
-    if current_user.role == 'Admin':
-        db_session.global_init("db/blogs.db")
-        db_sess = db_session.create_session()
-        user = db_sess.query(User).filter(User.id == id).first()
-        user.role = 'Specialist'
-        db_sess.commit()
-        return redirect('/users')
-    else:
-        return "Недостаточно прав."
-
-
-@login_required
-@app.route('/operator/<id>')
-def make_oper(id):
-    if current_user.role == 'Admin':
-        db_session.global_init("db/blogs.db")
-        db_sess = db_session.create_session()
-        user = db_sess.query(User).filter(User.id == id).first()
-        user.role = 'Operator'
-        db_sess.commit()
-        return redirect('/users')
-    else:
-        return "Недостаточно прав."
-
-
-@login_required
-@app.route('/open/<id>')
-def open_quest(id):
-    db_session.global_init("db/blogs.db")
-    db_sess = db_session.create_session()
-    question = db_sess.query(Question).filter(Question.id == id).first()
-    return render_template('question.html', quest=question)
-
-
-@login_required
-@app.route('/delete/<id>')
-def delete_quest(id):
-    db_session.global_init("db/blogs.db")
-    db_sess = db_session.create_session()
-    question = db_sess.query(Question).filter(Question.id == id).first()
-    db_sess.delete(question)
-    db_sess.commit()
-    return redirect('/profile')
-
-
-@login_required
-@app.route('/add_answer/<id>', methods=["GET", "POST"])
-def add_answer(id):
-    if current_user.role == 'Specialist':
-        form = AnswerForm()
-        if form.validate_on_submit():
-            db_session.global_init("db/blogs.db")
-            db_sess = db_session.create_session()
-            question = db_sess.query(Question).filter(Question.id == id).first()
-            question.answer_author = current_user.username
-            question.answer = form.answer.data
-            question.answered = True
-            db_sess.commit()
-            return redirect('/index')
-        db_session.global_init("db/blogs.db")
-        db_sess = db_session.create_session()
-        question = db_sess.query(Question).filter(Question.id == id).first()
-        return render_template('add_answer.html', quest=question, form=form)
-    else:
-        return redirect('/index')
-
-
-@login_required
-@app.route('/users')
-def users():
-    if current_user.role == 'Admin':
-        db_session.global_init("db/blogs.db")
-        db_sess = db_session.create_session()
-        all_users = db_sess.query(User).all()
-        return render_template('users.html', all_users=all_users)
-    else:
-        return redirect('/index')
-
-
-@login_required
 @app.route('/profile')
-def profile():
-    if current_user.role == 'Operator':
-        db_session.global_init("db/blogs.db")
-        db_sess = db_session.create_session()
-        all_quests = db_sess.query(Question).all()
-        return render_template('profile.html', quests=all_quests)
-    else:
-        return redirect('/index')
-
-
 @login_required
-@app.route('/index&tag=<tag>')
-def index_tag(tag):
-    if current_user.role == 'Specialist':
-        db_session.global_init("db/blogs.db")
-        db_sess = db_session.create_session()
-        all_users = db_sess.query(User).all()
-        all_quests = db_sess.query(Question).all()
-        return render_template('index_tag.html', TAG=tag, quests=all_quests)
+def profile():
+    db_session.global_init("db/blogs.db")
+    db_sess = db_session.create_session()
+    return render_template('profile.html')
 
 
 if __name__ == '__main__':
