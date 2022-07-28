@@ -63,10 +63,11 @@ def index(s=-1):
         return redirect("/index")
     if form1.validate_on_submit():
         col_name = form1.column_name.data
-        if col_name not in costs and col_name != "new":
+        if col_name not in costs and col_name != "new" and "/" not in col_name and "\\" not in col_name:
             print(123)
             costs[col_name] = []
             user.data = "costs = " + str(costs)
+            print(user.data)
             db_sess.commit()
             return redirect("/index")
         else:
@@ -75,7 +76,7 @@ def index(s=-1):
     sums = [sum(s) for s in costs.values()]
     for k, v in costs.items():
         max_size = max(max_size, len(v))
-    return render_template('index.html', data=costs, max_size=max_size, sums=sums, status=s, form=form, form1=form1)
+    return render_template('index.html', data=costs, max_size=max_size, sums=sums, status=s, form=form, form1=form1, ts=sum(sums))
 
 
 @login_manager.user_loader
