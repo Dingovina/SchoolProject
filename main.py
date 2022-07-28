@@ -13,14 +13,14 @@ class RegFrom(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     repeat_password = PasswordField('Confirm the password', validators=[DataRequired()])
     username = StringField('Username', validators=[DataRequired()])
-    submit = SubmitField('Submit')
+    submit = SubmitField('Sign up')
 
 
 class LoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     remember_me = BooleanField('Remember me')
-    submit = SubmitField('Login')
+    submit = SubmitField('Sign in')
 
 
 class NewCol(FlaskForm):
