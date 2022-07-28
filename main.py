@@ -76,7 +76,8 @@ def index(s=-1):
     sums = [sum(s) for s in costs.values()]
     for k, v in costs.items():
         max_size = max(max_size, len(v))
-    return render_template('index.html', data=costs, max_size=max_size, sums=sums, status=s, form=form, form1=form1, ts=sum(sums))
+    return render_template('index.html', data=costs, max_size=max_size, sums=sums, status=s, form=form, form1=form1,
+                           ts=sum(sums))
 
 
 @login_manager.user_loader
@@ -165,14 +166,6 @@ def login():
 def logout():
     logout_user()
     return redirect("/")
-
-
-@app.route('/profile')
-@login_required
-def profile():
-    db_session.global_init("db/blogs.db")
-    db_sess = db_session.create_session()
-    return render_template('profile.html')
 
 
 if __name__ == '__main__':
