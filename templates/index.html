@@ -25,7 +25,7 @@
             </tr>
             </thead>
             <tbody>
-            {% for i in range(max_size) %}
+            {% for i in range(max_size + 1) %}
             <tr>
                 {% for k in data.keys() %}
                     {% if data[k][i] %}
@@ -52,26 +52,6 @@
                 {% endfor %}
             </tr>
             {% endfor %}
-            <tr>
-                {% for k in data.keys() %}
-                    {% if data[k][max_size - 1] %}
-                        {% if k == status %}
-                        <form action="" method="post"><td width="100px">
-                            {{ form.hidden_tag() }}
-                            {{ form.summa(class="form-control", type="integer", autocomplete="off", autofocus="on", placeholder="0") }}</td>
-                            <td>
-                                {{ form.submit(type="submit", class="btn btn-primary") }}
-                            </td></form>
-                        {% else %}
-                            <td width="150px"></td>
-                            <td><a class="btn btn-success" href="/index/{{ k }}">+</a></td>
-                        {% endif %}
-                    {% else %}
-                        <td width="150px"></td>
-                        <td width="100px"></td>
-                    {% endif %}
-                {% endfor %}
-            </tr>
             <tr>
                 {% for n in sums %}
                     <td bgcolor="#00AA00" align="center" style="font-size: 26px"><a>{{ n }}</a></td>
